@@ -10,7 +10,7 @@ from video.utils import assemble_claude_prompt_video
 
 
 USER_PROMPT = """
-Generate code for a web page that looks exactly like this.
+Generate code for a mini-game that looks exactly like this.
 """
 
 SVG_USER_PROMPT = """

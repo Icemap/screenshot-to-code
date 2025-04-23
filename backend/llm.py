@@ -1,9 +1,11 @@
 import copy
 from enum import Enum
 import base64
+import os
 import time
 from typing import Any, Awaitable, Callable, List, cast, TypedDict
 from anthropic import AsyncAnthropic
+import httpx
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionChunk
 from config import IS_DEBUG_ENABLED
@@ -104,7 +106,15 @@ async def stream_claude_response(
     model: Llm,
 ) -> Completion:
     start_time = time.time()
-    client = AsyncAnthropic(api_key=api_key)
+
+    if os.getenv("HTTP_PROXY") and os.getenv("HTTPS_PROXY"):
+        async_client = httpx.AsyncClient(proxies={
+            "http": os.getenv("HTTP_PROXY"),
+            "https": os.getenv("HTTPS_PROXY"),
+        })
+        client = AsyncAnthropic(api_key=api_key, http_client=async_client)
+    else:
+        client = AsyncAnthropic(api_key=api_key)
 
     # Base parameters
     max_tokens = 8192
